@@ -26,5 +26,22 @@ async function getPresignedUploadUrl(key, contentType, expiresIn = 3600) {
   });
   return getSignedUrl(s3, command, { expiresIn });
 }
+/**
+ * List all objects in the bucket.
+ */
+async function listObjects() {
+  const command = new ListObjectsV2Command({ Bucket: BUCKET });
+  const response = await s3.send(command);
+  return response.Contents || [];
+}
+
+/**
+ * Delete an object from the bucket.
+ * @param {string} key - Object key to delete
+ */
+async function deleteObject(key) {
+  const command = new DeleteObjectCommand({ Bucket: BUCKET, Key: key });
+  await s3.send(command);
+}
 
 module.exports = { getPresignedUploadUrl, listObjects, deleteObject };
