@@ -1,6 +1,5 @@
 const { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const fs = require('fs');
 
 const s3 = new S3Client({
   region: 'auto',
@@ -28,41 +27,4 @@ async function getPresignedUploadUrl(key, contentType, expiresIn = 3600) {
   return getSignedUrl(s3, command, { expiresIn });
 }
 
-/**
- * Upload a file from disk directly to R2.
- * @param {string} key - Object key (e.g. "video.mp4")
- * @param {string} filePath - Absolute path to the local file
- * @param {string} contentType - MIME type
- */
-async function uploadFile(key, filePath, contentType) {
-  const fileStream = fs.createReadStream(filePath);
-  const { size } = fs.statSync(filePath);
-  const command = new PutObjectCommand({
-    Bucket: BUCKET,
-    Key: key,
-    Body: fileStream,
-    ContentType: contentType,
-    ContentLength: size,
-  });
-  await s3.send(command);
-}
-
-/**
- * List all objects in the bucket.
- */
-async function listObjects() {
-  const command = new ListObjectsV2Command({ Bucket: BUCKET });
-  const response = await s3.send(command);
-  return response.Contents || [];
-}
-
-/**
- * Delete an object from the bucket.
- * @param {string} key - Object key to delete
- */
-async function deleteObject(key) {
-  const command = new DeleteObjectCommand({ Bucket: BUCKET, Key: key });
-  await s3.send(command);
-}
-
-module.exports = { getPresignedUploadUrl, listObjects, deleteObject, uploadFile };
+module.exports = { getPresignedUploadUrl, listObjects, deleteObject };
