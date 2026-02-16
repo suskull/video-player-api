@@ -1,7 +1,7 @@
 /**
- * One-time script to configure CORS on the R2 bucket.
- * Run: node setup-cors.js
- */
+* One-time script to configure CORS on the R2 bucket.
+* Run: node setup-cors.js
+*/
 require('dotenv').config();
 const { S3Client, PutBucketCorsCommand } = require('@aws-sdk/client-s3');
 
